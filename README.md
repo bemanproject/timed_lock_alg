@@ -5,13 +5,13 @@ SPDX-License-Identifier: MIT
 -->
 
 <!-- markdownlint-disable-next-line line-length -->
-![Library Status](https://raw.githubusercontent.com/bemanproject/beman/refs/heads/main/images/badges/beman_badge-beman_library_production_ready_api_may_undergo_changes.svg) ![Continuous Integration Tests](https://github.com/bemanproject/timed_lock_alg/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/bemanproject/timed_lock_alg/actions/workflows/pre-commit-check.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/bemanproject/timed_lock_alg/badge.svg?branch=main)](https://coveralls.io/github/bemanproject/timed_lock_alg?branch=main) ![Standard Target](https://github.com/bemanproject/beman/blob/main/images/badges/cpp29.svg) [![Compiler Explorer Example](https://img.shields.io/badge/Try%20it%20on%20Compiler%20Explorer-grey?logo=compilerexplorer&logoColor=67c52a)](https://godbolt.org/z/3reh77M53)
+![Library Status](https://github.com/bemanproject/beman/blob/main/images/badges/beman_badge-beman_library_under_development.svg) ![Continuous Integration Tests](https://github.com/bemanproject/timed_lock_alg/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/bemanproject/timed_lock_alg/actions/workflows/pre-commit-check.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/bemanproject/timed_lock_alg/badge.svg?branch=main)](https://coveralls.io/github/bemanproject/timed_lock_alg?branch=main) ![Standard Target](https://github.com/bemanproject/beman/blob/main/images/badges/cpp29.svg) [![Compiler Explorer Example](https://img.shields.io/badge/Try%20it%20on%20Compiler%20Explorer-grey?logo=compilerexplorer&logoColor=67c52a)](https://godbolt.org/z/jPYdxT3E7)
 
 `beman.timed_lock_alg` implements timed lock algorithms for multiple lockables.
 
 **Implements**: `std::try_lock_until` and `std::try_lock_for` proposed in [Timed lock algorithms for multiple lockables (P3832R0)](https://wg21.link/P3832R0).
 
-**Status**: [Production ready. API may undergo changes.](https://github.com/bemanproject/beman/blob/main/docs/beman_library_maturity_model.md#production-ready-api-may-undergo-changes)
+**Status**: [Under development and not yet ready for production use.](https://github.com/bemanproject/beman/blob/main/docs/beman_library_maturity_model.md#under-development-and-not-yet-ready-for-production-use)
 
 ## License
 
@@ -49,30 +49,16 @@ You can disable building tests by setting CMake option
 [`BEMAN_TIMED_LOCK_ALG_BUILD_TESTS`](#beman_timed_lock_alg_build_tests) to `OFF`
 when configuring the project.
 
-> [!TIP]
->
-> The logs indicate examples disabled due to lack of compiler support.
->
-> For example:
->
-> ```txt
-> -- Looking for __cpp_lib_ranges
-> -- Looking for __cpp_lib_ranges - not found
-> CMake Warning at examples/CMakeLists.txt:12 (message):
->   Missing range support! Skip: identity_as_default_projection
->
->
-> Examples to be built: identity_direct_usage
-> ```
-
 ### Supported Platforms
 
 This project officially supports:
 
-* GCC versions 11–15
-* LLVM Clang++ (with libstdc++ or libc++) versions 17–21
+* GCC versions 10–15
+* LLVM Clang++ (with libstdc++ or libc++) versions 11–21
+* ICX (with libstdc++ or libc++) versions 2021.1.2-2025.2.1
 * AppleClang version 17.0.0 (i.e., the [latest version on GitHub-hosted macOS runners](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md))
-* MSVC version 19.44.35215.0 (i.e., the [latest version on GitHub-hosted Windows runners](https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md))
+* MSVC version 19.29 (with `/std:c++latest`) and 19.30 to 19.44.35215.0 (i.e., the [latest version on GitHub-hosted Windows runners](https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md))
+* Note: libstdc++ versions 14-14.3 and 15-15.2 (inclusive) does _not_ support using `-fsanitize=thread` on code using `std::timed_mutex` due to [Bug 121496](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=121496). This affects GCC and all implementations using libstdc++ such as LLVM Clang++ and ICX unless `-stdlib=libc++` is used.
 
 > [!NOTE]
 >

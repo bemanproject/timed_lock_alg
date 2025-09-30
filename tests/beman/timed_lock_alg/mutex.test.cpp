@@ -14,6 +14,17 @@ using namespace std::chrono_literals;
 namespace tla = beman::timed_lock_alg;
 
 namespace {
+// joining thread for implementations missing std::jthread
+class JThread : public std::thread {
+  public:
+    template <class... Args>
+    JThread(Args&&... args) : std::thread(std::forward<Args>(args)...) {}
+    ~JThread() {
+        if (joinable()) {
+            join();
+        }
+    }
+};
 const auto now         = std::chrono::steady_clock::now();
 const auto no_duration = std::chrono::milliseconds{0};
 
@@ -50,7 +61,7 @@ TEST(Mutex, try_many_unlocked) {
 
 TEST(Mutex, try_many_one_locked) {
     std::array<std::timed_mutex, 30> mtxs;
-    auto                             th = std::jthread([&] {
+    auto                             th = JThread([&] {
         std::lock_guard lg(mtxs.back());
         std::this_thread::sleep_for(15ms);
     });
@@ -63,7 +74,7 @@ TEST(Mutex, try_many_one_locked) {
 
 TEST(Mutex, return_last_failed) {
     std::array<std::timed_mutex, 2> mtxs;
-    auto                            th = std::jthread([&] {
+    auto                            th = JThread([&] {
         std::lock(mtxs[0], mtxs[1]);
         std::this_thread::sleep_for(10ms);
         mtxs[0].unlock(); // 5ms after try_lock_for started, 15ms left
@@ -82,7 +93,7 @@ TEST(Mutex, succeed_with_three_in_tricky_sequence) {
     // A different implementation may behave differently but should
     // still succeed in locking all three in time.
     std::array<std::timed_mutex, 3> mtxs;
-    auto                            th = std::jthread([&] {
+    auto                            th = JThread([&] {
         std::lock(mtxs[0], mtxs[1], mtxs[2]);
         std::this_thread::sleep_for(10ms);
         mtxs[0].unlock(); // 5ms after try_lock_for started, 15ms left
@@ -97,5 +108,6 @@ TEST(Mutex, succeed_with_three_in_tricky_sequence) {
     });
 
     std::this_thread::sleep_for(5ms);
-    EXPECT_EQ(-1, std::apply([](auto&... mts) { return tla::try_lock_for(20ms, mts...); }, mtxs));
+    // 20ms is enough for most implementations, but lets give MSVC 10ms more
+    EXPECT_EQ(-1, std::apply([](auto&... mts) { return tla::try_lock_for(20ms + 10ms, mts...); }, mtxs));
 }

@@ -9,6 +9,20 @@
 #include <iostream>
 #include <thread>
 
+namespace {
+// joining thread for implementations missing std::jthread
+class JThread : public std::thread {
+  public:
+    template <class... Args>
+    JThread(Args&&... args) : std::thread(std::forward<Args>(args)...) {}
+    ~JThread() {
+        if (joinable()) {
+            join();
+        }
+    }
+};
+} // namespace
+
 namespace tla = beman::timed_lock_alg;
 
 constexpr std::chrono::milliseconds yield(10);
@@ -25,23 +39,24 @@ int main() {
     for (int ms = 10; ms <= 70; ms += 20) { // try 10, 30, 50, 70 ms
         std::chrono::milliseconds cms(ms);
         // start a thread that locks the last mutex unless mtxs is empty
-        std::jthread jt = [&]() -> std::jthread {
+        JThread jt = [&]() -> JThread {
             if constexpr (not mtxs.empty()) {
-                return std::jthread(foo, std::ref(mtxs.back()));
+                return JThread(foo, std::ref(mtxs.back()));
             } else {
                 return {};
             }
         }();
         std::this_thread::sleep_for(yield);
 
-        std::cout << "trying for " << cms << '\n';
+        std::cout << "trying for " << cms.count() << "ms\n";
 
         auto start = std::chrono::steady_clock::now();
         auto r1    = std::apply([&](auto&... mxs) { return tla::try_lock_for(cms, mxs...); }, mtxs);
         auto end   = std::chrono::steady_clock::now();
 
         // should be done in approx. 10, 30, 40 and 40 ms, where the two last tries succeeds:
-        std::cout << "done in " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start) << ": ";
+        std::cout << "done in " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+                  << "ms: ";
 
         if (r1 == -1) {
             auto sl = std::apply([&](auto&... mxs) { return std::scoped_lock(std::adopt_lock, mxs...); }, mtxs);
