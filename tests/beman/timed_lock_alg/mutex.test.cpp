@@ -78,7 +78,7 @@ TEST(Mutex, return_last_failed) {
     auto                            th = JThread([&] {
         std::lock(mtxs[0], mtxs[1]);
         std::this_thread::sleep_for(10ms);
-        mtxs[0].unlock(); // 5ms after try_lock_for started, 15ms left
+        mtxs[0].unlock(); // 5ms after try_lock_for started, 10ms left
 
         // try_lock_for here hangs on mtxs[1] and should return 1:
         std::this_thread::sleep_for(20ms);
@@ -86,7 +86,7 @@ TEST(Mutex, return_last_failed) {
     });
 
     std::this_thread::sleep_for(5ms);
-    EXPECT_EQ(1, std::apply([](auto&... mts) { return tla::try_lock_for(20ms, mts...); }, mtxs));
+    EXPECT_EQ(1, std::apply([](auto&... mts) { return tla::try_lock_for(15ms, mts...); }, mtxs));
 }
 
 TEST(Mutex, succeed_with_three_in_tricky_sequence) {
