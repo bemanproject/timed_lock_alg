@@ -1,4 +1,4 @@
-# beman.timed\_lock\_alg : Timed lock algorithms for multiple lockables
+# beman.timed_lock_alg : Timed lock algorithms for multiple lockables
 
 <!--
 SPDX-License-Identifier: MIT
@@ -266,15 +266,15 @@ Enable building examples. Default: ON. Values: { ON, OFF }.
 Enable installing the CMake config file package. Default: ON.
 Values: { ON, OFF }.
 
-This is required so that users of `beman.timed\_lock\_alg` can use
+This is required so that users of `beman.timed_lock_alg` can use
 `find_package(beman.timed_lock_alg)` to locate the library.
 
 </details>
 
-## Integrate beman.timed\_lock\_alg into your project
+## Integrate beman.timed_lock_alg into your project
 
-To use `beman.timed\_lock\_alg` in your C++ project,
-include an appropriate `beman.timed\_lock\_alg` header from your source code.
+To use `beman.timed_lock_alg` in your C++ project,
+include an appropriate `beman.timed_lock_alg` header from your source code.
 
 ```c++
 #include <beman/timed_lock_alg/mutex.hpp>
@@ -282,25 +282,25 @@ include an appropriate `beman.timed\_lock\_alg` header from your source code.
 
 > [!NOTE]
 >
-> `beman.timed\_lock\_alg` headers are to be included with the `beman/timed\_lock\_alg/` prefix.
+> `beman.timed_lock_alg` headers are to be included with the `beman/timed_lock_alg/` prefix.
 > Altering include search paths to spell the include target another way (e.g.
 > `#include <mutex.hpp>`) is unsupported.
 
-The process for incorporating `beman.timed\_lock\_alg` into your project depends on the
+The process for incorporating `beman.timed_lock_alg` into your project depends on the
 build system being used. Instructions for CMake are provided in following sections.
 
-### Incorporating `beman.timed\_lock\_alg` into your project with CMake
+### Incorporating `beman.timed_lock_alg` into your project with CMake
 
 For CMake based projects,
-you will need to use the `beman.timed\_lock\_alg` CMake module
-to define the `beman::timed\_lock\_alg` CMake target:
+you will need to use the `beman.timed_lock_alg` CMake module
+to define the `beman::timed_lock_alg` CMake target:
 
 ```cmake
 find_package(beman.timed_lock_alg REQUIRED)
 ```
 
-You will also need to add `beman::timed\_lock\_alg` to the link libraries of
-any libraries or executables that include `beman.timed\_lock\_alg` headers.
+You will also need to add `beman::timed_lock_alg` to the link libraries of
+any libraries or executables that include `beman.timed_lock_alg` headers.
 
 ```cmake
 target_link_libraries(yourlib PUBLIC beman::timed_lock_alg)
