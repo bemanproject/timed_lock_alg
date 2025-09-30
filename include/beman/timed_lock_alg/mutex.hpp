@@ -3,14 +3,12 @@
 
 #include <array>
 #include <chrono>
+#include <concepts>
 #include <cstddef>
 #include <mutex>
 #include <thread>
 #include <tuple>
 #include <utility>
-
-#include <chrono>
-#include <concepts>
 
 namespace beman::timed_lock_alg::detail {
 template <class T>

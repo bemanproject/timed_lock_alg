@@ -11,9 +11,15 @@ if(NOT BEMAN_TIMED_LOCK_ALG_LOCKFILE)
 endif()
 
 set(BemanTimedLockAlg_projectDir "${CMAKE_CURRENT_LIST_DIR}/../..")
-message(TRACE "BemanTimedLockAlg_projectDir=\"${BemanTimedLockAlg_projectDir}\"")
+message(
+    TRACE
+    "BemanTimedLockAlg_projectDir=\"${BemanTimedLockAlg_projectDir}\""
+)
 
-message(TRACE "BEMAN_TIMED_LOCK_ALG_LOCKFILE=\"${BEMAN_TIMED_LOCK_ALG_LOCKFILE}\"")
+message(
+    TRACE
+    "BEMAN_TIMED_LOCK_ALG_LOCKFILE=\"${BEMAN_TIMED_LOCK_ALG_LOCKFILE}\""
+)
 file(
     REAL_PATH
     "${BEMAN_TIMED_LOCK_ALG_LOCKFILE}"
@@ -45,7 +51,10 @@ function(BemanTimedLockAlg_provideDependency method package_name)
         "dependencies"
     )
     if(BemanTimedLockAlg_error)
-        message(FATAL_ERROR "${BemanTimedLockAlg_lockfile}: ${BemanTimedLockAlg_error}")
+        message(
+            FATAL_ERROR
+            "${BemanTimedLockAlg_lockfile}: ${BemanTimedLockAlg_error}"
+        )
     endif()
 
     # Get the length of the libraries array and store it in BemanTimedLockAlg_dependenciesObj
@@ -56,7 +65,10 @@ function(BemanTimedLockAlg_provideDependency method package_name)
         LENGTH "${BemanTimedLockAlg_dependenciesObj}"
     )
     if(BemanTimedLockAlg_error)
-        message(FATAL_ERROR "${BemanTimedLockAlg_lockfile}: ${BemanTimedLockAlg_error}")
+        message(
+            FATAL_ERROR
+            "${BemanTimedLockAlg_lockfile}: ${BemanTimedLockAlg_error}"
+        )
     endif()
 
     if(BemanTimedLockAlg_numDependencies EQUAL 0)
@@ -64,7 +76,11 @@ function(BemanTimedLockAlg_provideDependency method package_name)
     endif()
 
     # Loop over each dependency object
-    math(EXPR BemanTimedLockAlg_maxIndex "${BemanTimedLockAlg_numDependencies} - 1")
+    math(
+        EXPR
+        BemanTimedLockAlg_maxIndex
+        "${BemanTimedLockAlg_numDependencies} - 1"
+    )
     foreach(BemanTimedLockAlg_index RANGE "${BemanTimedLockAlg_maxIndex}")
         set(BemanTimedLockAlg_errorPrefix
             "${BemanTimedLockAlg_lockfile}, dependency ${BemanTimedLockAlg_index}"

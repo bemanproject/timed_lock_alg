@@ -1,9 +1,9 @@
-#include <beman/timed_lock_alg/mutex.hpp>
-
 /*
  * A simple example with 30 timed mutexes where one is locked
  * for 40 milliseconds before being released.
  */
+
+#include <beman/timed_lock_alg/mutex.hpp>
 
 #include <chrono>
 #include <iostream>

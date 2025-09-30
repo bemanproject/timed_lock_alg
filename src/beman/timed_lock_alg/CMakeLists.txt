@@ -14,7 +14,10 @@ target_sources(
                 "${CMAKE_CURRENT_SOURCE_DIR}/../../../include/beman/timed_lock_alg/mutex.hpp"
 )
 
-set_target_properties(beman.timed_lock_alg PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON)
+set_target_properties(
+    beman.timed_lock_alg
+    PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON
+)
 
 find_package(beman-install-library REQUIRED)
 beman_install_library(beman.timed_lock_alg)
