@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+# SPDX-License-Identifier: MIT
 
 set(ALL_EXAMPLES try_lock_a_bunch)
 

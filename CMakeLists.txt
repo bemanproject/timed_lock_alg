@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+# SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.25)
 

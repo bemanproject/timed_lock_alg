@@ -1,11 +1,11 @@
 # beman.timed\_lock\_alg : Timed lock algorithms for multiple lockables
 
 <!--
-SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+SPDX-License-Identifier: MIT
 -->
 
 <!-- markdownlint-disable-next-line line-length -->
-![Library Status](https://raw.githubusercontent.com/bemanproject/beman/refs/heads/main/images/badges/beman_badge-beman_library_production_ready_api_may_undergo_changes.svg) ![Continuous Integration Tests](https://github.com/bemanproject/timed_lock_alg/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/bemanproject/timed_lock_alg/actions/workflows/pre-commit.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/bemanproject/timed_lock_alg/badge.svg?branch=main)](https://coveralls.io/github/bemanproject/timed_lock_alg?branch=main) ![Standard Target](https://github.com/bemanproject/beman/blob/main/images/badges/cpp29.svg) [![Compiler Explorer Example](https://img.shields.io/badge/Try%20it%20on%20Compiler%20Explorer-grey?logo=compilerexplorer&logoColor=67c52a)](https://godbolt.org/z/4qEPK87va)
+![Library Status](https://raw.githubusercontent.com/bemanproject/beman/refs/heads/main/images/badges/beman_badge-beman_library_production_ready_api_may_undergo_changes.svg) ![Continuous Integration Tests](https://github.com/bemanproject/timed_lock_alg/actions/workflows/ci_tests.yml/badge.svg) ![Lint Check (pre-commit)](https://github.com/bemanproject/timed_lock_alg/actions/workflows/pre-commit.yml/badge.svg) [![Coverage](https://coveralls.io/repos/github/bemanproject/timed_lock_alg/badge.svg?branch=main)](https://coveralls.io/github/bemanproject/timed_lock_alg?branch=main) ![Standard Target](https://github.com/bemanproject/beman/blob/main/images/badges/cpp29.svg) [![Compiler Explorer Example](https://img.shields.io/badge/Try%20it%20on%20Compiler%20Explorer-grey?logo=compilerexplorer&logoColor=67c52a)](https://godbolt.org/z/3reh77M53)
 
 `beman.timed_lock_alg` implements timed lock algorithms for multiple lockables.
 
