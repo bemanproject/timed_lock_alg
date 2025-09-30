@@ -6,6 +6,7 @@
 #include <beman/timed_lock_alg/mutex.hpp>
 
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <thread>
 

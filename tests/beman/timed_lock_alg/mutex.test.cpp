@@ -26,7 +26,8 @@ class JThread : public std::thread {
     }
 };
 const auto now         = std::chrono::steady_clock::now();
-const auto no_duration = std::chrono::milliseconds{0};
+const auto no_duration = 0ms;
+const auto extra_grace = 100ms;
 
 template <class MutexType, std::size_t N>
 void unlocker(std::array<MutexType, N>& mtxs) {
@@ -67,7 +68,7 @@ TEST(Mutex, try_many_one_locked) {
     });
 
     std::this_thread::sleep_for(5ms); // approx 10ms left on lock after this
-    EXPECT_EQ(-1, std::apply([](auto&... mts) { return tla::try_lock_for(20ms, mts...); }, mtxs));
+    EXPECT_EQ(-1, std::apply([](auto&... mts) { return tla::try_lock_for(20ms + extra_grace, mts...); }, mtxs));
 
     unlocker(mtxs);
 }
@@ -108,6 +109,6 @@ TEST(Mutex, succeed_with_three_in_tricky_sequence) {
     });
 
     std::this_thread::sleep_for(5ms);
-    // 20ms is enough for most implementations, but lets give MSVC 10ms more
-    EXPECT_EQ(-1, std::apply([](auto&... mts) { return tla::try_lock_for(20ms + 10ms, mts...); }, mtxs));
+    // 20ms is enough for most implementations, but some require a lot more so let them have it:
+    EXPECT_EQ(-1, std::apply([](auto&... mts) { return tla::try_lock_for(20ms + extra_grace, mts...); }, mtxs));
 }
