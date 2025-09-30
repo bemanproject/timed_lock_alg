@@ -6,7 +6,7 @@
 
 #include <array>
 #include <chrono>
-//#include <execution> // tbb or similar required
+// #include <execution> // tbb or similar required
 #include <functional>
 #include <future>
 #include <mutex>
@@ -52,7 +52,7 @@ TEST(Mutex, try_many_unlocked) {
 
 TEST(Mutex, try_many_one_locked) {
     std::array<std::timed_mutex, 30> mtxs;
-    auto th = std::jthread([&]{
+    auto                             th = std::jthread([&] {
         std::lock_guard lg(mtxs.back());
         std::this_thread::sleep_for(15ms);
     });
@@ -65,11 +65,11 @@ TEST(Mutex, try_many_one_locked) {
 
 TEST(Mutex, return_last_failed) {
     std::array<std::timed_mutex, 2> mtxs;
-    auto th = std::jthread([&]{
-        std::lock(mtxs[0],mtxs[1]);
+    auto                            th = std::jthread([&] {
+        std::lock(mtxs[0], mtxs[1]);
         std::this_thread::sleep_for(10ms);
         mtxs[0].unlock(); // 5ms after try_lock_for started, 15ms left
-                          
+
         // try_lock_for here hangs on mtxs[1] and should return 1:
         std::this_thread::sleep_for(20ms);
         mtxs[1].unlock();
@@ -84,8 +84,8 @@ TEST(Mutex, succeed_with_three_in_tricky_sequence) {
     // A different implementation may behave differently but should
     // still succeed in locking all three in time.
     std::array<std::timed_mutex, 3> mtxs;
-    auto th = std::jthread([&]{
-        std::lock(mtxs[0],mtxs[1], mtxs[2]);
+    auto                            th = std::jthread([&] {
+        std::lock(mtxs[0], mtxs[1], mtxs[2]);
         std::this_thread::sleep_for(10ms);
         mtxs[0].unlock(); // 5ms after try_lock_for started, 15ms left
                           // try_lock_for gets this and jumps to mtxs[1]
