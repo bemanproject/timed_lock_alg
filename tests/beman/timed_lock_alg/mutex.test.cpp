@@ -77,15 +77,15 @@ TEST(Mutex, return_last_failed) {
     std::array<std::timed_mutex, 2> mtxs;
     auto                            th = JThread([&] {
         std::lock(mtxs[0], mtxs[1]);
-        std::this_thread::sleep_for(10ms);
-        mtxs[0].unlock(); // 5ms after try_lock_for started, 5ms left
+        std::this_thread::sleep_for(50ms);
+        mtxs[0].unlock(); // 25ms after try_lock_for
 
         // try_lock_for here hangs on mtxs[1] and should return 1:
-        std::this_thread::sleep_for(30ms + extra_grace);
+        std::this_thread::sleep_for(50ms + extra_grace);
         mtxs[1].unlock();
     });
 
-    std::this_thread::sleep_for(5ms);
+    std::this_thread::sleep_for(25ms);
     EXPECT_EQ(1, std::apply([](auto&... mts) { return tla::try_lock_for(10ms, mts...); }, mtxs));
 }
 
