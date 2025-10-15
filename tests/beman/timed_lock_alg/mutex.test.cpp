@@ -96,19 +96,19 @@ TEST(Mutex, succeed_with_three_in_tricky_sequence) {
     std::array<std::timed_mutex, 3> mtxs;
     auto                            th = JThread([&] {
         std::lock(mtxs[0], mtxs[1], mtxs[2]);
-        std::this_thread::sleep_for(10ms);
-        mtxs[0].unlock(); // 5ms after try_lock_for started, 15ms left
+        std::this_thread::sleep_for(55ms);
+        mtxs[0].unlock(); // 5ms after try_lock_for started, 35ms left
                           // try_lock_for gets this and jumps to mtxs[1]
         std::this_thread::sleep_for(5ms);
         mtxs[2].unlock(); // try_lock_for still hangs on mtxs[1]
         mtxs[0].lock();
         mtxs[1].unlock(); // try_lock_for gets this and jumps to mtxs[0]
-                          // 10ms after try_lock_for started, 10ms left
-        std::this_thread::sleep_for(5ms);
-        mtxs[0].unlock(); // try_lock_for should have 5ms left here
+                          // 30ms after try_lock_for started, 10ms left
+        std::this_thread::sleep_for(10ms);
+        mtxs[0].unlock(); // try_lock_for should have 20ms left here
     });
 
-    std::this_thread::sleep_for(5ms);
+    std::this_thread::sleep_for(50ms);
     // 20ms is enough for most implementations, but some require a lot more so let them have it:
-    EXPECT_EQ(-1, std::apply([](auto&... mts) { return tla::try_lock_for(20ms + extra_grace, mts...); }, mtxs));
+    EXPECT_EQ(-1, std::apply([](auto&... mts) { return tla::try_lock_for(40ms + extra_grace, mts...); }, mtxs));
 }
