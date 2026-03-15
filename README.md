@@ -62,21 +62,21 @@ when configuring the project.
 
 ### Supported Platforms
 
-This project officially supports:
+| Compiler   | Version | C++ Standards | Standard Library  |
+|------------|---------|---------------|-------------------|
+| GCC        | 15-13   | C++26-C++20   | libstdc++         |
+| GCC        | 12-11   | C++23, C++20  | libstdc++         |
+| Clang      | 22-19   | C++26-C++20   | libstdc++, libc++ |
+| Clang      | 18-17   | C++26-C++20   | libc++            |
+| Clang      | 18-17   | C++20         | libstdc++         |
+| AppleClang | latest  | C++26-C++20   | libc++            |
+| MSVC       | latest  | C++23         | MSVC STL          |
 
-* GCC versions 10–15
-* LLVM Clang++ (with libstdc++ or libc++) versions 11–21
-* ICX (with libstdc++ or libc++) versions 2021.1.2-2025.2.1
-* AppleClang version 17.0.0 (i.e., the [latest version on GitHub-hosted macOS runners](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md))
-* MSVC version 19.29 (with `/std:c++latest`) and 19.30 to 19.44.35215.0 (i.e., the [latest version on GitHub-hosted Windows runners](https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md))
+### Notes on Supported Platforms
+
+This project also supports ICX (with libstdc++ or libc++) versions 2021.1.2-2025.2.1.
+
 * Note: libstdc++ versions 14-14.3 and 15-15.2 (inclusive) does _not_ support using `-fsanitize=thread` on code using `std::timed_mutex` due to [Bug 121496](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=121496). This affects GCC and all implementations using libstdc++ such as LLVM Clang++ and ICX unless `-stdlib=libc++` is used.
-
-> [!NOTE]
->
-> Versions outside of this range would likely work as well,
-> especially if you're using a version above the given range
-> (e.g. HEAD/ nightly).
-> These development environments are verified using our CI configuration.
 
 ## Development
 
