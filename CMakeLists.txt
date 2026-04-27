@@ -24,8 +24,9 @@ option(
     ${PROJECT_IS_TOP_LEVEL}
 )
 
-# for find of beman-install-library
+# for find of beman_install_library and configure_build_telemetry
 include(infra/cmake/beman-install-library.cmake)
+include(infra/cmake/BuildTelemetryConfig.cmake)
 
 add_library(beman.timed_lock_alg INTERFACE)
 add_library(beman::timed_lock_alg ALIAS beman.timed_lock_alg)
@@ -43,6 +44,7 @@ set_target_properties(
 add_subdirectory(include/beman/timed_lock_alg)
 
 beman_install_library(beman.timed_lock_alg TARGETS beman.timed_lock_alg)
+configure_build_telemetry()
 
 if(BEMAN_TIMED_LOCK_ALG_BUILD_TESTS)
     enable_testing()
