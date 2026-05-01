@@ -10,7 +10,7 @@ target_link_libraries(
 )
 
 include(GoogleTest)
-gtest_discover_tests(beman.timed_lock_alg.tests.try_lock)
+gtest_discover_tests(beman.timed_lock_alg.tests.try_lock DISCOVERY_TIMEOUT 60)
 
 add_executable(beman.timed_lock_alg.tests.multi_lock)
 target_sources(
@@ -23,4 +23,4 @@ target_link_libraries(
 )
 
 include(GoogleTest)
-gtest_discover_tests(beman.timed_lock_alg.tests.multi_lock)
+gtest_discover_tests(beman.timed_lock_alg.tests.multi_lock DISCOVERY_TIMEOUT 60)

@@ -293,6 +293,17 @@ For details on building beman.timed_lock_alg without using a CMake preset, refer
 
 ### Installation
 
+#### Vcpkg
+
+The preferred way to install timed_lock_alg is via vcpkg. To do so, after installing vcpkg
+itself, you need to add support for the Beman project's [vcpkg
+registry](https://github.com/bemanproject/vcpkg-registry) by configuring a
+`vcpkg-configuration.json` file (which timed_lock_alg [provides](vcpkg-configuration.json)).
+
+Then, simply run `vcpkg install beman-timed-lock-alg`.
+
+#### Manual
+
 To install beman.timed_lock_alg globally after building with the `gcc-release` preset, you can
 run:
 

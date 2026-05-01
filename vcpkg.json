@@ -1,0 +1,10 @@
+{
+  "name": "beman-timed-lock-alg",
+  "version-semver": "1.1.0",
+  "dependencies": [
+    {
+      "name": "gtest",
+      "host": true
+    }
+  ]
+}
