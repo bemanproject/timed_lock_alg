@@ -45,4 +45,4 @@ repos:
     - id: beman-tidy
       args: [".", "--verbose", "--require-all"]
 
-exclude: 'cookiecutter/|infra/'
+exclude: 'cookiecutter/|infra/|port/'
