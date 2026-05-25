@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
 /*
  * A simple example with 30 timed mutexes where one is locked
  * for 40 milliseconds before being released.
