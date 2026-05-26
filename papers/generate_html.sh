@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
 if (( $# != 1 )); then
     echo "USAGE: $0 proposal" >&2
     exit 1
