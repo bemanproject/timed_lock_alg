@@ -67,11 +67,11 @@ struct result {
     bool retry;
 };
 //-------------------------------------------------------------------------
-template <class Timepoint, class Locks, class... Seqs>
-int try_lock_until_impl(const Timepoint& end_time, Locks locks, type_pack<Seqs...>) {
+template <class Clock, class Duration, class Locks, class... Seqs>
+int try_lock_until_impl(const std::chrono::time_point<Clock, Duration>& end_time, Locks locks, type_pack<Seqs...>) {
     // an array with one function per lockable/sequence to try:
-    constexpr std::array<result (*)(const Timepoint&, Locks&), sizeof...(Seqs)> seqs{
-        {+[](const Timepoint& tp, Locks& lks) {
+    constexpr std::array<result (*)(const std::chrono::time_point<Clock, Duration>&, Locks&), sizeof...(Seqs)> seqs{
+        {+[](const std::chrono::time_point<Clock, Duration>& tp, Locks& lks) {
             return []<class Tp, std::size_t I0, std::size_t... Is>(
                        const Tp& itp, Locks& lcks, std::index_sequence<I0, Is...>) -> result {
                 if (std::unique_lock first{std::get<I0>(lcks), itp}) {
@@ -80,9 +80,10 @@ int try_lock_until_impl(const Timepoint& end_time, Locks locks, type_pack<Seqs..
                         first.release();
                         return {-1, false}; // success
                     }
-                    // return the index to try_lock_until next round
+                    // return the index to try_lock_until next round or the index which failed to lock
+                    // in case time has run out
                     constexpr std::array idxs{static_cast<int>(Is)...};
-                    return {idxs[static_cast<std::size_t>(res)], true};
+                    return {idxs[static_cast<std::size_t>(res)], Clock::now() < itp};
                 }
                 // timeout
                 return {static_cast<int>(I0), false};

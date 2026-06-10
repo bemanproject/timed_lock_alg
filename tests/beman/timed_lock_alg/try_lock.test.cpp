@@ -229,5 +229,5 @@ TEST(TryLockIntegration, SucceedWithThreeInTrickySequence) {
         m0.should_fail = false; // unblock m0; try_lock(m1,m2) → both succeed → done
     });
 
-    EXPECT_EQ(-1, tla::try_lock_for(no_duration, m0, m1, m2));
+    EXPECT_EQ(-1, tla::try_lock_for(24h, m0, m1, m2));
 }
