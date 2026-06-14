@@ -62,40 +62,35 @@ using make_pack_of_rotating_index_sequences = typename rot_detail::make_pack_imp
 int friendly_try_lock(auto& l1) { return -static_cast<int>(l1.try_lock()); }
 int friendly_try_lock(auto&... ls) { return std::try_lock(ls...); }
 //-------------------------------------------------------------------------
-struct result {
-    int  idx;
-    bool retry;
-};
-//-------------------------------------------------------------------------
 template <class Clock, class Duration, class Locks, class... Seqs>
 int try_lock_until_impl(const std::chrono::time_point<Clock, Duration>& end_time, Locks locks, type_pack<Seqs...>) {
     // an array with one function per lockable/sequence to try:
-    constexpr std::array<result (*)(const std::chrono::time_point<Clock, Duration>&, Locks&), sizeof...(Seqs)> seqs{
+    constexpr std::array<int (*)(const std::chrono::time_point<Clock, Duration>&, Locks&), sizeof...(Seqs)> seqs{
         {+[](const std::chrono::time_point<Clock, Duration>& tp, Locks& lks) {
             return []<class Tp, std::size_t I0, std::size_t... Is>(
-                       const Tp& itp, Locks& lcks, std::index_sequence<I0, Is...>) -> result {
+                       const Tp& itp, Locks& lcks, std::index_sequence<I0, Is...>) -> int {
                 if (std::unique_lock first{std::get<I0>(lcks), itp}) {
                     int res = friendly_try_lock(std::get<Is>(lcks)...);
                     if (res == -1) {
                         first.release();
-                        return {-1, false}; // success
+                        return -1; // success
                     }
                     // return the index to try_lock_until next round or the index which failed to lock
                     // in case time has run out
                     constexpr std::array idxs{static_cast<int>(Is)...};
-                    return {idxs[static_cast<std::size_t>(res)], Clock::now() < itp};
+                    return idxs[static_cast<std::size_t>(res)];
                 }
-                // timeout
-                return {static_cast<int>(I0), false};
+                // probable timeout
+                return static_cast<int>(I0);
             }(tp, lks, Seqs{});
         }...}};
 
     // try rotations in seqs while there is time to retry
-    result ret{};
-    while ((ret = seqs[static_cast<std::size_t>(ret.idx)](end_time, locks)).retry) {
+    int idx = 0;
+    while ((idx = seqs[static_cast<std::size_t>(idx)](end_time, locks)) != -1 && Clock::now() < end_time) {
         std::this_thread::yield();
     }
-    return ret.idx;
+    return idx;
 }
 } // namespace detail
 
