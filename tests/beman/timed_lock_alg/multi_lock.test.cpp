@@ -363,3 +363,38 @@ TEST(MultiLock, RealTimedMutexTryLockFor) {
     tla::multi_lock  lock(10ms, m1, m2);
     EXPECT_TRUE(lock.owns_lock());
 }
+
+// ============================================================================
+// Custom TrivialClock support
+// ============================================================================
+
+namespace {
+struct CustomClock {
+    using rep                                        = std::chrono::steady_clock::rep;
+    using period                                     = std::chrono::steady_clock::period;
+    using duration                                   = std::chrono::duration<rep, period>;
+    using time_point                                 = std::chrono::time_point<CustomClock, duration>;
+    static constexpr bool is_steady [[maybe_unused]] = true;
+
+    static time_point now() noexcept { return time_point{std::chrono::steady_clock::now().time_since_epoch()}; }
+};
+} // namespace
+
+TEST(MultiLock, CustomClockTryLockUntilMock) {
+    MockMutex       m1, m2;
+    tla::multi_lock lock(std::defer_lock, m1, m2);
+    EXPECT_EQ(-1, lock.try_lock_until(CustomClock::now()));
+    EXPECT_TRUE(lock.owns_lock());
+}
+
+TEST(MultiLock, CustomClockConstructorMock) {
+    MockMutex       m1, m2;
+    tla::multi_lock lock(CustomClock::now(), m1, m2);
+    EXPECT_TRUE(lock.owns_lock());
+}
+
+TEST(MultiLock, CustomClockRealTimedMutex) {
+    std::timed_mutex m1, m2;
+    tla::multi_lock  lock(CustomClock::now() + 10ms, m1, m2);
+    EXPECT_TRUE(lock.owns_lock());
+}
