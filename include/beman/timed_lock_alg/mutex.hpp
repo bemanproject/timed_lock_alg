@@ -32,6 +32,11 @@ concept TimedLockable = Lockable<T> && requires(T t) {
     { t.try_lock_until(std::chrono::time_point<std::chrono::steady_clock>{}) } -> std::same_as<bool>;
     { t.try_lock_until(std::chrono::time_point<std::chrono::system_clock>{}) } -> std::same_as<bool>;
 };
+
+template <class T, class Clock, class Duration>
+concept TimedLockableUntil = TimedLockable<T> && requires(T t, const std::chrono::time_point<Clock, Duration>& tp) {
+    { t.try_lock_until(tp) } -> std::same_as<bool>;
+};
 } // namespace beman::timed_lock_alg::detail
 
 namespace beman::timed_lock_alg {
@@ -94,7 +99,7 @@ int try_lock_until_impl(const std::chrono::time_point<Clock, Duration>& end_time
 }
 } // namespace detail
 
-template <class Clock, class Duration, detail::TimedLockable... Ls>
+template <class Clock, class Duration, detail::TimedLockableUntil<Clock, Duration>... Ls>
 [[nodiscard]] int try_lock_until(const std::chrono::time_point<Clock, Duration>& tp, Ls&... ls) {
     if constexpr (sizeof...(Ls) == 0) {
         return -1;
@@ -142,7 +147,7 @@ class multi_lock {
     }
 
     template <class Clock, class Duration>
-        requires(... && detail::TimedLockable<Ms>)
+        requires(... && detail::TimedLockableUntil<Ms, Clock, Duration>)
     multi_lock(const std::chrono::time_point<Clock, Duration>& tp, Ms&... ms) : m_ms(std::addressof(ms)...) {
         try_lock_until(tp);
     }
@@ -218,7 +223,7 @@ class multi_lock {
     }
 
     template <class Clock, class Duration>
-        requires(... && detail::TimedLockable<Ms>)
+        requires(... && detail::TimedLockableUntil<Ms, Clock, Duration>)
     int try_lock_until(const std::chrono::time_point<Clock, Duration>& tp) {
         lock_check();
         int rv   = std::apply([&](auto... ms) { return beman::timed_lock_alg::try_lock_until(tp, *ms...); }, m_ms);

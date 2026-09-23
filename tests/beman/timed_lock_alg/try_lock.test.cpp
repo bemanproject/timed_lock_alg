@@ -76,6 +76,36 @@ struct ScriptedMutex {
             std::this_thread::yield();
     }
 };
+
+// A user-defined TrivialClock (not one of the standard chrono clocks) used to
+// verify that the algorithms forward any TrivialClock, not only std::chrono
+// clocks. It is a thin wrapper over steady_clock with a distinct type.
+struct CustomClock {
+    using rep                       = std::chrono::steady_clock::rep;
+    using period                    = std::chrono::steady_clock::period;
+    using duration                  = std::chrono::duration<rep, period>;
+    using time_point                = std::chrono::time_point<CustomClock, duration>;
+    static constexpr bool is_steady = true;
+
+    static time_point now() noexcept { return time_point{std::chrono::steady_clock::now().time_since_epoch()}; }
+};
+
+// A mutex whose try_lock_until only accepts the standard clocks (its overload
+// is not a template). It therefore models TimedLockable but must NOT model
+// TimedLockableUntil<CustomClock, ...>.
+struct StdClockOnlyMutex {
+    std::atomic<bool> should_fail{false};
+
+    void lock() {}
+    bool try_lock() { return !should_fail; }
+    template <class R, class P>
+    bool try_lock_for(const std::chrono::duration<R, P>&) {
+        return try_lock();
+    }
+    bool try_lock_until(const std::chrono::time_point<std::chrono::steady_clock>&) { return try_lock(); }
+    bool try_lock_until(const std::chrono::time_point<std::chrono::system_clock>&) { return try_lock(); }
+    void unlock() {}
+};
 } // namespace
 
 // ============================================================================
@@ -230,4 +260,54 @@ TEST(TryLockIntegration, SucceedWithThreeInTrickySequence) {
     });
 
     EXPECT_EQ(-1, tla::try_lock_for(24h, m0, m1, m2));
+}
+
+// ============================================================================
+// Custom TrivialClock support
+// ============================================================================
+
+TEST(TryLockCustomClock, ConceptSanity) {
+    static_assert(tla::detail::TimedLockable<MockMutex>);
+    static_assert(tla::detail::TimedLockableUntil<MockMutex, CustomClock, CustomClock::duration>);
+    static_assert(tla::detail::TimedLockableUntil<std::timed_mutex, CustomClock, CustomClock::duration>);
+
+    // StdClockOnlyMutex is a TimedLockable but does not accept CustomClock.
+    static_assert(tla::detail::TimedLockable<StdClockOnlyMutex>);
+    static_assert(!tla::detail::TimedLockableUntil<StdClockOnlyMutex, CustomClock, CustomClock::duration>);
+    static_assert(tla::detail::TimedLockableUntil<StdClockOnlyMutex,
+                                                  std::chrono::steady_clock,
+                                                  std::chrono::steady_clock::duration>);
+}
+
+TEST(TryLockCustomClock, ZeroMutexes) { EXPECT_EQ(-1, tla::try_lock_until(CustomClock::now())); }
+
+TEST(TryLockCustomClock, OneMutexUnlocked) {
+    MockMutex mtx;
+    EXPECT_EQ(-1, tla::try_lock_until(CustomClock::now(), mtx));
+    mtx.unlock();
+}
+
+TEST(TryLockCustomClock, OneMutexLocked) {
+    MockMutex mtx;
+    mtx.should_fail = true;
+    EXPECT_EQ(0, tla::try_lock_until(CustomClock::now(), mtx));
+}
+
+TEST(TryLockCustomClock, ManyMutexesUnlocked) {
+    std::array<MockMutex, 5> mtxs;
+    EXPECT_EQ(-1, std::apply([](auto&... mts) { return tla::try_lock_until(CustomClock::now(), mts...); }, mtxs));
+    unlocker(mtxs);
+}
+
+TEST(TryLockCustomClock, ManyMutexesOneLockedMiddle) {
+    std::array<MockMutex, 3> mtxs;
+    mtxs[1].should_fail = true;
+    int result = std::apply([](auto&... mts) { return tla::try_lock_until(CustomClock::now(), mts...); }, mtxs);
+    EXPECT_EQ(1, result);
+}
+
+TEST(TryLockCustomClock, RealTimedMutex) {
+    std::timed_mutex mtx;
+    EXPECT_EQ(-1, tla::try_lock_until(CustomClock::now(), mtx));
+    mtx.unlock();
 }
