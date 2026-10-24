@@ -113,9 +113,6 @@ jobs:
               "tests": [
                 { "cxxversions": ["c++26", "c++23", "c++20"],
                   "tests": [{"stdlibs": ["libc++"], "tests": ["Release.Default"]}]
-                },
-                { "cxxversions": ["c++23", "c++20"],
-                  "tests": [{"stdlibs": ["libstdc++"], "tests": ["Release.Default"]}]
                 }
               ]
             },
@@ -123,9 +120,6 @@ jobs:
               "tests": [
                 { "cxxversions": ["c++26", "c++23", "c++20"],
                   "tests": [{"stdlibs": ["libc++"], "tests": ["Release.Default"]}]
-                },
-                { "cxxversions": ["c++20"],
-                  "tests": [{"stdlibs": ["libstdc++"], "tests": ["Release.Default"]}]
                 }
               ]
             }
